@@ -31,12 +31,18 @@ class WindowOptionsValidationError(Exception):
 
 def validate_options(opts: WindowedDatasetOpts):
     """validate an instance of windowing options"""
-    for option_key, option_value in opts.items():
-        if isinstance(option_value, int) and option_value < 1:
-            raise WindowOptionsValidationError(
-                f"""invalid value of {option_value} for {option_key}.
-                 {option_key} length must be at least 1"""
-            )
+    invalid_options = [
+        {"option": key, "value": value}
+        for key, value in opts.items()
+        if isinstance(value, int) and value < 1
+    ]
+    if invalid_options:
+        raise WindowOptionsValidationError(
+            f"""invalid windowing options detected:\n
+                {invalid_options}\n
+                The values for each window dataset option must be >= 1.
+                """
+        )
 
 
 @dataclass

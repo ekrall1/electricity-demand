@@ -10,5 +10,5 @@ class DownloadValidation(TypedDict):
 
 
 download_validation_object: DownloadValidation = {
-    "zip_file_info": "dec601bbb17837950b27f9a470f68a9f679723fee2605ae9d57951f02a46f28b"
+    "zip_file_info": "9464c1e4a98aa4bd9348e20629b77c16bf85a26cd9073ec2b262855a2d532b24"
 }

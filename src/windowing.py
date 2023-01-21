@@ -38,10 +38,11 @@ def validate_options(opts: WindowedDatasetOpts):
     ]
     if invalid_options:
         raise WindowOptionsValidationError(
-            f"""invalid windowing options detected:\n
-                {invalid_options}\n
-                The values for each window dataset option must be >= 1.
-                """
+            f"""
+            invalid windowing options detected:\n
+            {invalid_options}\n
+            The values for each window dataset option must be >= 1.
+            """
         )
 
 

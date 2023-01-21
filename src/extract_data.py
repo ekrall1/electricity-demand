@@ -25,6 +25,13 @@ PARQUET_FILENAME = "est_hourly.parquet"
 class DataExtract:
     """contains methods to extract hourly load data from compressed format
     and load parquet to dataframe
+
+    Attributes:
+      data_path:        path to data files
+      zip_filename:     name of the compressed archive
+      parquet_filename: name of the final parquet file
+      parquet_original_filename:    name of the parquet file in the archive
+      zipfile_object:   zipfile.ZipFile object created from the archive
     """
 
     def __init__(self):
@@ -55,7 +62,7 @@ class DataExtract:
         """
         extract data from compressed archive
         """
-        if self._check_for_existing_file():
+        if self._check_for_existing_parquet_file():
             return
 
         zipfile_sha: str = self._get_zipfile_sha()
@@ -76,7 +83,7 @@ class DataExtract:
           dataframe containing load data, if the parquet exists
           otherwise an empty dataframe
         """
-        if not self._check_for_existing_file():
+        if not self._check_for_existing_parquet_file():
             print(
                 """warning: nothing to load.
                 Use method `extract_data()` to create hourly load parquet"""
@@ -85,10 +92,18 @@ class DataExtract:
         return pd.read_parquet(self.parquet_filepath)
 
     def _path_to_file(self, filename: str) -> str:
+        """function for path to file within the data directory
+        Returns
+          path to file in the data directory, in string format
+        """
         return os.path.join(DATA_PATH, filename)
 
-    def _check_for_existing_file(self) -> bool:
-        """"""
+    def _check_for_existing_parquet_file(self) -> bool:
+        """check whether parquet file already exists before extracting
+        Returns
+          boolean indicator of whether the file already exists
+          True -> yes it exists already
+        """
         return os.path.exists(self.parquet_filepath)
 
     def _verify_correct_data(self, sha: str) -> None:

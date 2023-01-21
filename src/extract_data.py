@@ -93,6 +93,8 @@ class DataExtract:
 
     def _path_to_file(self, filename: str) -> str:
         """function for path to file within the data directory
+        Args
+          filename:  the name of the file
         Returns
           path to file in the data directory, in string format
         """

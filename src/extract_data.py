@@ -45,7 +45,7 @@ class DataExtract:
     @property
     def zip_filepath(self):
         """the path to the compressed archive of data files
-        Returns
+        Returns:
           filepath in string format
         """
         return self._path_to_file(self.zip_filename)
@@ -53,7 +53,7 @@ class DataExtract:
     @property
     def parquet_filepath(self):
         """the path to the extracted data parquet
-        Returns
+        Returns:
           filepath in string format
         """
         return self._path_to_file(self.parquet_filename)
@@ -79,7 +79,7 @@ class DataExtract:
     def load_parquet_to_df(self) -> pd.DataFrame:
         """
         check that parquet has been extracted and load parquet into pandas dataframe
-        Returns
+        Returns:
           dataframe containing load data, if the parquet exists
           otherwise an empty dataframe
         """
@@ -93,16 +93,16 @@ class DataExtract:
 
     def _path_to_file(self, filename: str) -> str:
         """function for path to file within the data directory
-        Args
+        Args:
           filename:  the name of the file
-        Returns
+        Returns:
           path to file in the data directory, in string format
         """
         return os.path.join(DATA_PATH, filename)
 
     def _check_for_existing_parquet_file(self) -> bool:
         """check whether parquet file already exists before extracting
-        Returns
+        Returns:
           boolean indicator of whether the file already exists
           True -> yes it exists already
         """
@@ -127,7 +127,7 @@ class DataExtract:
 
     def _get_zipfile_sha(self) -> str:
         """hash zip file's info list and size in kB
-        Returns
+        Returns:
           unique string representation of file info and size
         """
         return hashlib.sha256(

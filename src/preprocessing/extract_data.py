@@ -1,25 +1,21 @@
 """ this module extracts data from the downloaded dataset """
 
+import datetime
 import hashlib
 import os
 import sys
 from zipfile import ZipFile
 
 import pandas as pd
-
-from file_validation import download_validation_object
-
-DATA_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "..",
-    "data",
+import pytz
+from configuration import (
+    DATA_PATH,
+    DOWNLOAD_VALIDATION_OBJECT,
+    PARQUET_FILENAME,
+    PARQUET_ORIGINAL_FILENAME,
+    ZIP_FILENAME,
 )
-
-ZIP_FILENAME = "hourly-energy-consumption.zip"
-PARQUET_ORIGINAL_FILENAME = (
-    "est_hourly.paruqet"  # it is mis-spelled in the Kaggle zip archive
-)
-PARQUET_FILENAME = "est_hourly.parquet"
+from custom_types import DtIntervalSelection, LoadForecastOptions
 
 
 class DataExtract:
@@ -76,20 +72,54 @@ class DataExtract:
             self._path_to_file(self.parquet_original_filename), self.parquet_filepath
         )
 
-    def load_parquet_to_df(self) -> pd.DataFrame:
+    def load_parquet_to_df(self, opts: LoadForecastOptions) -> pd.Series:
         """
         check that parquet has been extracted and load parquet into pandas dataframe
+        Args:
+          opts:     a load forecast options object specified in config file
         Returns:
-          dataframe containing load data, if the parquet exists
-          otherwise an empty dataframe
+          series containing load data, if the parquet exists
+          otherwise an empty series
+        Note: current state only allows for one zone to be foreast at a time
         """
         if not self._check_for_existing_parquet_file():
             print(
-                """warning: nothing to load.
+                """warning: nothing was loaded.
                 Use method `extract_data()` to create hourly load parquet"""
             )
-            return pd.DataFrame()
-        return pd.read_parquet(self.parquet_filepath)
+            return pd.Series()
+
+        df_load_data = pd.read_parquet(self.parquet_filepath)
+
+        # localize datetime index using timezone options (make the index offset aware)
+        df_load_data.index = pd.to_datetime(df_load_data.index).tz_localize(
+            opts["timezone_opts"]["timezone"],
+            ambiguous=opts["timezone_opts"]["ambiguous"],
+            nonexistent=opts["timezone_opts"]["nonexistent"],
+        )
+        start = pytz.timezone(opts["timezone_opts"]["timezone"]).localize(
+            self._convert_train_test_opts_to_dt(opts["train_test_dates"]["start"])
+        )
+        end = pytz.timezone(opts["timezone_opts"]["timezone"]).localize(
+            self._convert_train_test_opts_to_dt(opts["train_test_dates"]["end"])
+        )
+
+        idx_locs = self._get_date_range_idx_locs(df_load_data.index, start, end)
+
+        return df_load_data.iloc[idx_locs].sort_index()[opts["zone"]]
+
+    def _get_date_range_idx_locs(
+        self, dates: pd.DatetimeIndex, start: datetime.datetime, end: datetime.datetime
+    ) -> pd.Index:
+        return pd.Index({idx for idx, date in enumerate(dates) if start <= date <= end})
+
+    def _convert_train_test_opts_to_dt(self, dt_interval: DtIntervalSelection):
+        """"""
+        return datetime.datetime(
+            dt_interval["year"],
+            dt_interval["month"],
+            dt_interval["day"],
+        ) + datetime.timedelta(hours=dt_interval["hour"])
 
     def _path_to_file(self, filename: str) -> str:
         """function for path to file within the data directory
@@ -116,7 +146,7 @@ class DataExtract:
         Raises:
           SystemExit
         """
-        if sha != download_validation_object["zip_file_info"]:
+        if sha != DOWNLOAD_VALIDATION_OBJECT["zip_file_info"]:
             raise sys.exit(
                 """
                 Unexpected data encountered.

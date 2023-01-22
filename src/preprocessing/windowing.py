@@ -6,16 +6,7 @@ from dataclasses import dataclass
 from typing import Union
 
 import tensorflow as tf  # type: ignore
-from typing_extensions import NotRequired, TypedDict  # interpreter is Python 3.8
-
-
-class WindowedDatasetOpts(TypedDict):
-    """options for windowing tf dataset for time series NN"""
-
-    window: int
-    horizon: int
-    batch_size: int
-    shuffle_buffer_size: NotRequired[int]
+from custom_types import WindowedDatasetOpts
 
 
 class WindowOptionsValidationError(Exception):

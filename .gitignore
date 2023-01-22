@@ -1,1 +1,6 @@
 venv
+src/model/out
+*pycache*
+data/*.par*
+data/*.zip
+data/*.*sv

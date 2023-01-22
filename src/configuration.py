@@ -20,7 +20,7 @@ FORECAST_OPTIONS_OBJECT: LoadForecastOptions = {
     "min_max_scale": True,
     "window_opts": {
         "window": 24 * 30,
-        "horizon": 24,
+        "horizon": 24 * 7,
         "batch_size": 32,
         "shuffle_buffer_size": 1000,
     },

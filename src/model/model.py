@@ -27,6 +27,7 @@ def run_model(
     """
 
     tf.keras.backend.clear_session()
+    tf.random.set_seed(42)
 
     if opts["model"] == "cnn":
         model = cnn_model(opts)
@@ -86,6 +87,8 @@ def cnn_model(
             tf.keras.layers.Dropout(0.5),
             tf.keras.layers.MaxPooling1D(2),
             tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(128, activation="relu"),
+            tf.keras.layers.Dropout(0.5),
             tf.keras.layers.Dense(opts["window_opts"]["horizon"]),
         ]
     )
@@ -117,6 +120,8 @@ def lstm_model(
             ),
             tf.keras.layers.Dropout(0.5),
             tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(128, activation="relu"),
+            tf.keras.layers.Dropout(0.5),
             tf.keras.layers.Dense(opts["window_opts"]["horizon"]),
         ]
     )

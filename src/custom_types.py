@@ -58,7 +58,7 @@ class LoadForecastOptions(TypedDict):
     epochs: int
     es_patience: int
     lr_patience: int
-    additional_features: List[str]
+    additional_features: List[Literal["sin_day", "cos_day", "sin_year", "cos_year"]]
 
 
 class DownloadValidation(TypedDict):

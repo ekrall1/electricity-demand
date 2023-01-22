@@ -35,11 +35,11 @@ def run_model(
     else:
         raise sys.exit(
             """
-                Invalid options.
-                Must specify cnn or lstm model type in config options.
-                see configuration.py
-                Exiting now.
-                """
+            Invalid options.
+            Must specify cnn or lstm model type in config options.
+            see configuration.py
+            Exiting now.
+            """
         )
 
     model.compile(

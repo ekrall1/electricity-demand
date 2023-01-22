@@ -13,7 +13,8 @@ Time-series forecast models for electricity demand using TensorFlow and Keras.
   - ensure the `kaggle.json` is saved to `.kaggle` folder in the correct location (see instructions at the link above)
   - from the command line, run `kaggle datasets download robikscube/hourly-energy-consumption -p ./data`
 
-- To test
+## Run the program
+  - activate `venv`
   - `python src/app.py`
   - `src/configuration.py` contains an options object, which can be modified to change the run settings.  `src/custom_types.py` type definitions specify some of the limitations, such as allowable entries for zones and model types.
 

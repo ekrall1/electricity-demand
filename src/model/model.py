@@ -27,7 +27,6 @@ def run_model(
     """
 
     tf.keras.backend.clear_session()
-    tf.random.set_seed(42)
 
     if opts["model"] == "cnn":
         model = cnn_model(opts)

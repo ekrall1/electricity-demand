@@ -16,5 +16,5 @@ Time-series forecast models for electricity demand using TensorFlow and Keras.
 ## Run the program
   - activate `venv`
   - `python src/app.py` to run
-  - `src/configuration.py` contains an options object, which can be modified to change the run settings.  `src/custom_types.py` type definitions specify some of the limitations, such as allowable entries for zones and model types.
+  - `src/configuration.py` contains an `LoadForecastOptions` object, which can be modified to change the run settings.  The type definition for `LoadForecastOptions` in `src/custom_types.py` specifies some limitations on allowable zones, model selections, and other parameters.
 

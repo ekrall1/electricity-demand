@@ -1,13 +1,16 @@
 """ this module extracts data from the downloaded dataset """
-
 import datetime
 import hashlib
 import os
 import sys
+from copy import deepcopy
+from typing import Union
 from zipfile import ZipFile
 
+import numpy as np
 import pandas as pd
 import pytz
+
 from configuration import (
     DATA_PATH,
     DOWNLOAD_VALIDATION_OBJECT,
@@ -72,14 +75,16 @@ class DataExtract:
             self._path_to_file(self.parquet_original_filename), self.parquet_filepath
         )
 
-    def load_data_from_parquet(self, opts: LoadForecastOptions) -> pd.Series:
+    def load_data_from_parquet(
+        self, opts: LoadForecastOptions
+    ) -> Union[pd.Series, pd.DataFrame]:
         """
         check that parquet has been extracted and load parquet into pandas dataframe
         Args:
           opts:     a load forecast options object specified in config file
         Returns:
-          series containing load data, if the parquet exists
-          otherwise an empty series
+          pandas object containing load and feature data
+          if there is no parquet found, returns an empty series
         Note: current state only allows for one zone to be foreast at a time
         """
         if not self._check_for_existing_parquet_file():
@@ -106,7 +111,42 @@ class DataExtract:
 
         idx_locs = self._get_date_range_idx_locs(df_load_data.index, start, end)
 
-        return df_load_data.iloc[idx_locs].sort_index()[opts["zone"]]
+        feature_df = df_load_data.iloc[idx_locs].sort_index()
+
+        if len(opts["additional_features"]) > 0:
+            feature_df = self.add_features(feature_df, opts)
+
+        return feature_df[[opts["zone"], *opts["additional_features"]]]
+
+    @staticmethod
+    def add_features(input_df: pd.DataFrame, opts: LoadForecastOptions):
+        """add features to the dataframe for multivariate model
+        Args:
+          inputs_df:    datetime-indexed dataframe of load data
+          opts:         load forecast options object specified in config
+        Returns:
+          new_df:       dataframe with columns for each additional allowable feature
+        """
+
+        new_df = deepcopy(input_df)
+
+        # get timestamps from index
+        timestamps = np.array(new_df.index.map(pd.Timestamp.timestamp).to_list())
+
+        if "sin_day" in opts["additional_features"]:
+            new_df["sin_day"] = np.sin(timestamps * (2 * np.pi / 24 / 60 / 60))
+        if "cos_day" in opts["additional_features"]:
+            new_df["cos_day"] = np.cos(timestamps * (2 * np.pi / 24 / 60 / 60))
+        if "sin_year" in opts["additional_features"]:
+            new_df["sin_year"] = np.sin(
+                timestamps * (2 * np.pi / 24 / 60 / 60 / 365.245)
+            )
+        if "cos_year" in opts["additional_features"]:
+            new_df["cos_year"] = np.cos(
+                timestamps * (2 * np.pi / 24 / 60 / 60 / 365.245)
+            )
+
+        return new_df
 
     def _get_date_range_idx_locs(
         self, dates: pd.DatetimeIndex, start: datetime.datetime, end: datetime.datetime

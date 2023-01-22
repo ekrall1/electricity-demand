@@ -13,16 +13,18 @@ data_extractor = DataExtract()
 
 data_extractor.extract_data()
 
-load_data_series = data_extractor.load_data_from_parquet(opts)
+model_data = data_extractor.load_data_from_parquet(opts)
 
 # split data
-(train_series, test_series) = train_test_split(load_data_series, opts)
+(train_data, test_data) = train_test_split(model_data, opts)
 
 # preprocess
-train_dataset = tf.data.Dataset.from_tensor_slices(train_series)
-test_dataset = tf.data.Dataset.from_tensor_slices(test_series)
+train_dataset = tf.data.Dataset.from_tensor_slices(train_data)
+test_dataset = tf.data.Dataset.from_tensor_slices(test_data)
 
-windowing = windowed_dataset_factory(opts["window_opts"])
+windowing = windowed_dataset_factory(
+    opts["window_opts"], features=(1 + len(opts["additional_features"]))
+)
 
 windowed_training_dataset = windowing.make_windows(train_dataset)
 windowed_test_dataset = windowing.make_windows(test_dataset)

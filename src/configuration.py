@@ -19,17 +19,18 @@ FORECAST_OPTIONS_OBJECT: LoadForecastOptions = {
     "train_pct": 0.8,
     "min_max_scale": True,
     "window_opts": {
-        "window": 24 * 30 * 6,
+        "window": 24 * 30,
         "horizon": 24 * 7,
         "batch_size": 32,
         "shuffle_buffer_size": 1000,
     },
-    "model": "cnn",
+    "model": "lstm",
     "epochs": 100,
     "loss": "mae",
     "metrics": ["mae"],
     "es_patience": 15,
     "lr_patience": 5,
+    "additional_features": ["sin_day", "cos_day", "sin_year", "cos_year"],
 }
 
 
@@ -49,8 +50,6 @@ PARQUET_ORIGINAL_FILENAME = (
 PARQUET_FILENAME = "est_hourly.parquet"
 
 # validation of correct download
-
-
 DOWNLOAD_VALIDATION_OBJECT: DownloadValidation = {
     "zip_file_info": "9464c1e4a98aa4bd9348e20629b77c16bf85a26cd9073ec2b262855a2d532b24",
 }

@@ -1,14 +1,15 @@
 """ train-test split for time series forecast """
 
-from typing import Tuple
+from typing import Tuple, Union
 
 import pandas as pd
+
 from custom_types import LoadForecastOptions
 
 
 def train_test_split(
-    series: pd.Series, opts: LoadForecastOptions
-) -> Tuple[pd.Series, pd.Series]:
+    series: Union[pd.Series, pd.DataFrame], opts: LoadForecastOptions
+) -> Tuple[Union[pd.Series, pd.DataFrame], Union[pd.Series, pd.DataFrame]]:
     """split time series data into train and test sets
     future issue will add validation set
     Args:

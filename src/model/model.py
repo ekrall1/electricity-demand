@@ -3,8 +3,8 @@
 import sys
 
 import tensorflow as tf  # type: ignore
-from custom_types import LoadForecastOptions
 
+from custom_types import LoadForecastOptions
 from model.callbacks import (
     best_val_loss_checkpoint,
     early_stopping,
@@ -27,6 +27,7 @@ def run_model(
     """
 
     tf.keras.backend.clear_session()
+    tf.random.set_seed(42)
 
     if opts["model"] == "cnn":
         model = cnn_model(opts)
@@ -73,7 +74,9 @@ def cnn_model(
 
     model = tf.keras.Sequential(
         [
-            tf.keras.layers.Input((opts["window_opts"]["window"], 1)),
+            tf.keras.layers.Input(
+                (opts["window_opts"]["window"], 1 + len(opts["additional_features"]))
+            ),
             tf.keras.layers.Conv1D(
                 filters=32,
                 kernel_size=5,
@@ -84,6 +87,8 @@ def cnn_model(
             tf.keras.layers.Dropout(0.5),
             tf.keras.layers.MaxPooling1D(2),
             tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(128, activation="relu"),
+            tf.keras.layers.Dropout(0.5),
             tf.keras.layers.Dense(opts["window_opts"]["horizon"]),
         ]
     )
@@ -107,12 +112,16 @@ def lstm_model(
 
     model = tf.keras.Sequential(
         [
-            tf.keras.layers.Input((opts["window_opts"]["window"], 1)),
+            tf.keras.layers.Input(
+                (opts["window_opts"]["window"], 1 + len(opts["additional_features"]))
+            ),
             tf.keras.layers.Bidirectional(
                 tf.keras.layers.LSTM(64, return_sequences=True)
             ),
             tf.keras.layers.Dropout(0.5),
             tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(128, activation="relu"),
+            tf.keras.layers.Dropout(0.5),
             tf.keras.layers.Dense(opts["window_opts"]["horizon"]),
         ]
     )

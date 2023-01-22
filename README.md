@@ -1,4 +1,4 @@
-This repository contains code for time series forecasts of electricity demand using TensorFlow and Keras.
+Time-series forecast models for electricity demand using TensorFlow and Keras.
 
 ## Setup
 - Create environment

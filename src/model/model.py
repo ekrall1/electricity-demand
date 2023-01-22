@@ -3,8 +3,8 @@
 import sys
 
 import tensorflow as tf  # type: ignore
-from custom_types import LoadForecastOptions
 
+from custom_types import LoadForecastOptions
 from model.callbacks import (
     best_val_loss_checkpoint,
     early_stopping,
@@ -73,7 +73,9 @@ def cnn_model(
 
     model = tf.keras.Sequential(
         [
-            tf.keras.layers.Input((opts["window_opts"]["window"], 1)),
+            tf.keras.layers.Input(
+                (opts["window_opts"]["window"], 1 + len(opts["additional_features"]))
+            ),
             tf.keras.layers.Conv1D(
                 filters=32,
                 kernel_size=5,
@@ -107,7 +109,9 @@ def lstm_model(
 
     model = tf.keras.Sequential(
         [
-            tf.keras.layers.Input((opts["window_opts"]["window"], 1)),
+            tf.keras.layers.Input(
+                (opts["window_opts"]["window"], 1 + len(opts["additional_features"]))
+            ),
             tf.keras.layers.Bidirectional(
                 tf.keras.layers.LSTM(64, return_sequences=True)
             ),

@@ -58,6 +58,7 @@ class LoadForecastOptions(TypedDict):
     epochs: int
     es_patience: int
     lr_patience: int
+    additional_features: List[str]
 
 
 class DownloadValidation(TypedDict):

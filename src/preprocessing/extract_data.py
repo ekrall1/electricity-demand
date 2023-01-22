@@ -8,6 +8,7 @@ from zipfile import ZipFile
 
 import pandas as pd
 import pytz
+
 from configuration import (
     DATA_PATH,
     DOWNLOAD_VALIDATION_OBJECT,

@@ -13,7 +13,7 @@ data_extractor = DataExtract()
 
 data_extractor.extract_data()
 
-load_data_series = data_extractor.load_parquet_to_df(opts)
+load_data_series = data_extractor.load_data_from_parquet(opts)
 
 # split data
 (train_series, test_series) = train_test_split(load_data_series, opts)

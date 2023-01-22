@@ -72,7 +72,7 @@ class DataExtract:
             self._path_to_file(self.parquet_original_filename), self.parquet_filepath
         )
 
-    def load_parquet_to_df(self, opts: LoadForecastOptions) -> pd.Series:
+    def load_data_from_parquet(self, opts: LoadForecastOptions) -> pd.Series:
         """
         check that parquet has been extracted and load parquet into pandas dataframe
         Args:

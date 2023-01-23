@@ -145,6 +145,9 @@ class DataExtract:
             new_df["cos_year"] = np.cos(
                 timestamps * (2 * np.pi / 24 / 60 / 60 / 365.245)
             )
+        if "weekday" in opts["additional_features"]:
+            days_of_week = new_df.index.to_series().dt.dayofweek
+            new_df["weekday"] = [1 if day < 5 else 0 for day in days_of_week]
 
         return new_df
 

@@ -24,13 +24,13 @@ FORECAST_OPTIONS_OBJECT: LoadForecastOptions = {
         "batch_size": 32,
         "shuffle_buffer_size": 1000,
     },
-    "model": "lstm",
-    "epochs": 100,
-    "loss": "mae",
+    "model": "cnn",
+    "epochs": 1000,
+    "loss": "huber",
     "metrics": ["mae"],
-    "es_patience": 15,
-    "lr_patience": 5,
-    "additional_features": ["sin_day", "cos_day", "sin_year", "cos_year"],
+    "es_patience": 200,
+    "lr_patience": 100,
+    "additional_features": ["sin_day", "sin_year", "cos_day", "cos_year", "weekday"],
 }
 
 
@@ -39,6 +39,13 @@ DATA_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "..",
     "data",
+)
+
+# Model weights and other output
+MODEL_OUT_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "..",
+    "out",
 )
 
 ZIP_FILENAME = "hourly-energy-consumption.zip"

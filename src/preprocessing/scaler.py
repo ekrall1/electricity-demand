@@ -22,6 +22,5 @@ def scale_data(
     scaler = MinMaxScaler()
 
     data[opts["zone"]] = scaler.fit_transform(data[[opts["zone"]]])  # type: ignore
-    print(data)
 
     return (data, scaler)

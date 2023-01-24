@@ -9,11 +9,8 @@ import tensorflow as tf  # type: ignore
 
 from config import MODEL_OUT_PATH
 from custom_types import LoadForecastOptions
-from model.callbacks import (
-    best_val_loss_checkpoint,
-    early_stopping,
-    reduce_lr_on_plateau,
-)
+from model.callbacks import (best_val_loss_checkpoint, early_stopping,
+                             reduce_lr_on_plateau)
 
 
 def run_model(
@@ -154,16 +151,9 @@ def lstm_model(
                 name="input",
             ),
             tf.keras.layers.Bidirectional(
-                tf.keras.layers.LSTM(64, return_sequences=True, name="lstm_bidir1")
+                tf.keras.layers.LSTM(16, return_sequences=True, name="lstm_bidir1")
             ),
-            tf.keras.layers.Dropout(0.5),
-            tf.keras.layers.Bidirectional(
-                tf.keras.layers.LSTM(64, return_sequences=True, name="lstm_bidir1")
-            ),
-            tf.keras.layers.Dropout(0.5),
-            tf.keras.layers.Flatten(name="lstm_flatten"),
-            tf.keras.layers.Dense(512, activation="relu"),
-            tf.keras.layers.Dropout(0.5),
+            tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(opts["window_opts"]["horizon"], name="output"),
         ]
     )

@@ -111,16 +111,15 @@ class DataExtract:
         feature_df = df_load_data.iloc[idx_locs].sort_index()
 
         if len(opts["additional_features"]) > 0:
-            feature_df = self.add_features(feature_df, opts)
+            feature_df = self.add_features(feature_df)
 
         return feature_df[[opts["zone"], *opts["additional_features"]]]
 
     @staticmethod
-    def add_features(input_df: pd.DataFrame, opts: LoadForecastOptions):
+    def add_features(input_df: pd.DataFrame):
         """add features to the dataframe for multivariate model
         Args:
           inputs_df:    datetime-indexed dataframe of load data
-          opts:         load forecast options object specified in config
         Returns:
           new_df:       dataframe with columns for each additional allowable feature
         """
@@ -130,21 +129,15 @@ class DataExtract:
         # get timestamps from index
         timestamps = np.array(new_df.index.map(pd.Timestamp.timestamp).to_list())
 
-        if "sin_day" in opts["additional_features"]:
-            new_df["sin_day"] = np.sin(timestamps * (2 * np.pi / 24 / 60 / 60))
-        if "cos_day" in opts["additional_features"]:
-            new_df["cos_day"] = np.cos(timestamps * (2 * np.pi / 24 / 60 / 60))
-        if "sin_year" in opts["additional_features"]:
-            new_df["sin_year"] = np.sin(
-                timestamps * (2 * np.pi / 24 / 60 / 60 / 365.245)
-            )
-        if "cos_year" in opts["additional_features"]:
-            new_df["cos_year"] = np.cos(
-                timestamps * (2 * np.pi / 24 / 60 / 60 / 365.245)
-            )
-        if "weekday" in opts["additional_features"]:
-            days_of_week = new_df.index.to_series().dt.dayofweek
-            new_df["weekday"] = [1 if day < 5 else 0 for day in days_of_week]
+        new_df["sin_day"] = np.sin(timestamps * (2 * np.pi / 24 / 60 / 60))
+        new_df["cos_day"] = np.cos(timestamps * (2 * np.pi / 24 / 60 / 60))
+        new_df["sin_year"] = np.sin(timestamps * (2 * np.pi / 24 / 60 / 60 / 365.245))
+        new_df["cos_year"] = np.cos(timestamps * (2 * np.pi / 24 / 60 / 60 / 365.245))
+        days_of_week = new_df.index.to_series().dt.dayofweek
+        new_df["weekend"] = [1 if day < 5 else 0 for day in days_of_week]
+        new_df["dayofweek"] = [1 if day == 2 else 0 for day in days_of_week]
+        new_df["hour"] = new_df.index.to_series().dt.hour
+        new_df["dayofyear"] = new_df.index.to_series().dt.dayofyear
 
         return new_df
 

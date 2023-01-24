@@ -1,7 +1,11 @@
 """ Misc. configuration settings for the forecast program """
 import os
 
-from custom_types import DownloadValidation, LoadForecastOptions
+from dotenv.main import load_dotenv
+
+from custom_types import LoadForecastOptions
+
+load_dotenv()
 
 # forecast options
 
@@ -25,7 +29,7 @@ FORECAST_OPTIONS_OBJECT: LoadForecastOptions = {
         "shuffle_buffer_size": 1000,
     },
     "model": "cnn",
-    "epochs": 1000,
+    "epochs": 100,
     "loss": "huber",
     "metrics": ["mae"],
     "es_patience": 200,
@@ -55,8 +59,3 @@ PARQUET_ORIGINAL_FILENAME = (
 )
 
 PARQUET_FILENAME = "est_hourly.parquet"
-
-# validation of correct download
-DOWNLOAD_VALIDATION_OBJECT: DownloadValidation = {
-    "zip_file_info": "9464c1e4a98aa4bd9348e20629b77c16bf85a26cd9073ec2b262855a2d532b24",
-}

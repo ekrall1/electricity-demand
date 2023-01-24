@@ -4,3 +4,4 @@ out/**
 data/*.par*
 data/*.zip
 data/*.*sv
+src/.env

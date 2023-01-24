@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
 import tensorflow as tf  # type: ignore
 
-from configuration import MODEL_OUT_PATH
+from config import MODEL_OUT_PATH
 from custom_types import LoadForecastOptions
 from model.callbacks import (
     best_val_loss_checkpoint,

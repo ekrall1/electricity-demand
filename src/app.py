@@ -2,7 +2,7 @@
 
 import tensorflow as tf  # type: ignore
 
-from configuration import FORECAST_OPTIONS_OBJECT as opts
+from config import FORECAST_OPTIONS_OBJECT as opts
 from model.model import run_model
 from preprocessing.extract_data import DataExtract
 from preprocessing.scaler import scale_data

@@ -10,14 +10,9 @@ from zipfile import ZipFile
 import numpy as np
 import pandas as pd
 import pytz
+from dotenv.main import load_dotenv
 
-from configuration import (
-    DATA_PATH,
-    DOWNLOAD_VALIDATION_OBJECT,
-    PARQUET_FILENAME,
-    PARQUET_ORIGINAL_FILENAME,
-    ZIP_FILENAME,
-)
+from config import DATA_PATH, PARQUET_FILENAME, PARQUET_ORIGINAL_FILENAME, ZIP_FILENAME
 from custom_types import DtIntervalSelection, LoadForecastOptions
 
 
@@ -40,6 +35,8 @@ class DataExtract:
         self.parquet_original_filename = PARQUET_ORIGINAL_FILENAME
         with ZipFile(self.zip_filepath, "r") as zip_file:
             self.zipfile_object = zip_file
+        load_dotenv()
+        self.zip_file_hash = os.environ["ZIPFILEHASH"]
 
     @property
     def zip_filepath(self):
@@ -189,7 +186,7 @@ class DataExtract:
         Raises:
           SystemExit
         """
-        if sha != DOWNLOAD_VALIDATION_OBJECT["zip_file_info"]:
+        if sha != self.zip_file_hash:
             raise sys.exit(
                 """
                 Unexpected data encountered.
@@ -203,6 +200,9 @@ class DataExtract:
         Returns:
           unique string representation of file info and size
         """
-        return hashlib.sha256(
-            b"{self.zipfile_object.infolist()}{os.path.getsize(self.zip_filepath)/1024}"
-        ).hexdigest()
+
+        info = self.zipfile_object.infolist()
+        size = os.path.getsize(self.zip_filepath) / 1024
+
+        zip_info_size = f"{info}{size}".encode("utf-8")
+        return hashlib.sha256(zip_info_size).hexdigest()

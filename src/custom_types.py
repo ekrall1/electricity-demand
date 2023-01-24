@@ -53,12 +53,14 @@ class LoadForecastOptions(TypedDict):
     timezone_opts: TimeZoneOpts
     min_max_scale: bool
     model: Literal["cnn", "lstm"]
-    loss: Literal["mae"]
+    loss: Literal["mae", "huber"]
     metrics: List[Literal["mae"]]
     epochs: int
     es_patience: int
     lr_patience: int
-    additional_features: List[Literal["sin_day", "cos_day", "sin_year", "cos_year"]]
+    additional_features: List[
+        Literal["sin_day", "cos_day", "sin_year", "cos_year", "weekday"]
+    ]
 
 
 class DownloadValidation(TypedDict):

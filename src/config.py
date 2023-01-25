@@ -29,7 +29,7 @@ FORECAST_OPTIONS_OBJECT: LoadForecastOptions = {
         "shuffle_buffer_size": 1000,
     },
     "model": "lstm",
-    "epochs": 25,
+    "epochs": 200,
     "loss": "huber",
     "metrics": ["mae"],
     "es_patience": 100,

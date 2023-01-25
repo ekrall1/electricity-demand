@@ -1,4 +1,4 @@
-tensorflow==2.10.0
+tensorflow==2.10.1
 numpy==1.22.4
 pandas==1.5.3
 pandas-stubs==1.5.2.230105

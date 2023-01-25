@@ -154,6 +154,9 @@ def lstm_model(
             tf.keras.layers.Bidirectional(
                 tf.keras.layers.LSTM(16, return_sequences=True, name="lstm_bidir1")
             ),
+            tf.keras.layers.Bidirectional(
+                tf.keras.layers.LSTM(16, return_sequences=True, name="lstm_bidir1")
+            ),
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(opts["window_opts"]["horizon"], name="output"),
         ]

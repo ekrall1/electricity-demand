@@ -9,8 +9,11 @@ import tensorflow as tf  # type: ignore
 
 from config import MODEL_OUT_PATH
 from custom_types import LoadForecastOptions
-from model.callbacks import (best_val_loss_checkpoint, early_stopping,
-                             reduce_lr_on_plateau)
+from model.callbacks import (
+    best_val_loss_checkpoint,
+    early_stopping,
+    reduce_lr_on_plateau,
+)
 
 
 def run_model(
@@ -34,8 +37,6 @@ def run_model(
         model = cnn_model(opts)
     elif opts["model"] == "lstm":
         model = lstm_model(opts)
-    elif opts["model"] == "combined":
-        model = combined_cnn_lstm_model(opts)
     else:
         raise sys.exit(
             """
@@ -157,52 +158,6 @@ def lstm_model(
             tf.keras.layers.Dense(opts["window_opts"]["horizon"], name="output"),
         ]
     )
-
-    model.summary()
-
-    return model
-
-
-def combined_cnn_lstm_model(opts: LoadForecastOptions) -> tf.keras.Sequential:
-    """combine the cnn and lstm models
-    Args:
-      opts: load forecast model options
-    Returns:
-      model: combined lstm and cnn model
-    """
-
-    model1 = cnn_model(opts)
-    model2 = lstm_model(opts)
-    inputs = model1.input
-    combined_layer2 = model2.layers[0](inputs)
-    combined_layer = inputs
-
-    for layer in model1.layers:
-        if layer.name == "cnn_input":
-            pass
-        elif layer.name == "cnn_flatten":
-            combined_layer = layer(combined_layer)
-            break
-        else:
-            combined_layer = layer(combined_layer)
-
-    for layer_num, layer in enumerate(model2.layers):
-        if layer.name == "lstm_input" or layer_num == 0:
-            pass
-        elif layer.name == "lstm_flatten":
-            combined_layer2 = layer(combined_layer2)
-            break
-        else:
-            combined_layer2 = layer(combined_layer2)
-
-    concat = tf.keras.layers.Concatenate()([combined_layer, combined_layer2])
-    dense = tf.keras.layers.Dense(128, activation="relu")(concat)
-    dropout = tf.keras.layers.Dropout(0.5)(dense)
-    output = tf.keras.layers.Dense(opts["window_opts"]["horizon"], name="output")(
-        dropout
-    )
-
-    model = tf.keras.Model(inputs=inputs, outputs=output)
 
     model.summary()
 

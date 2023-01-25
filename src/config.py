@@ -23,18 +23,18 @@ FORECAST_OPTIONS_OBJECT: LoadForecastOptions = {
     "train_pct": 0.8,
     "min_max_scale": True,
     "window_opts": {
-        "window": 24 * 30,
+        "window": 24 * 7,
         "horizon": 24 * 7,
         "batch_size": 32,
         "shuffle_buffer_size": 1000,
     },
-    "model": "cnn",
-    "epochs": 100,
+    "model": "lstm",
+    "epochs": 200,
     "loss": "huber",
     "metrics": ["mae"],
-    "es_patience": 200,
-    "lr_patience": 100,
-    "additional_features": ["sin_day", "sin_year", "cos_day", "cos_year", "weekday"],
+    "es_patience": 100,
+    "lr_patience": 50,
+    "additional_features": ["dayofweek", "dayofyear", "sin_year", "sin_day", "hour"],
 }
 
 

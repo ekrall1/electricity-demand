@@ -6,7 +6,9 @@ import sys
 
 import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
+import numpy.typing as npt
 import tensorflow as tf  # type: ignore
+from sklearn.preprocessing import MinMaxScaler  # type: ignore
 
 from config import MODEL_OUT_PATH
 from custom_types import LoadForecastOptions
@@ -17,15 +19,44 @@ from model.callbacks import (
 )
 
 
-def predict_and_plot(
+def plot_prediction(
+    pred: npt.NDArray,
+    test_dataset: tf.data.Dataset,
+    scaler: MinMaxScaler,
+    batch: int,
+    sample: int,
+) -> None:
+    """plot prediction over the forecast horizon
+    Args:
+      pred:             the prediction
+      test_dataset:     the test data, for actuals
+      scaler:   the min max scaler
+      batch:    the batch index for the plot data
+      sample:   the intra-batch sample index for the plot data
+    """
+    plt.plot(np.squeeze(scaler.inverse_transform(pred)), label="predicted")
+    plt.plot(
+        np.squeeze(
+            scaler.inverse_transform(
+                tf.expand_dims(list(test_dataset)[sample][1][batch], axis=0)
+            )
+        ),
+        label="actual",
+    )
+    plt.legend(loc="upper left")
+    plt.xlabel("Hour")
+    plt.ylabel("MW")
+    plt.show()
+
+
+def predict_using_trained_model(
     model: tf.keras.Sequential,
     opts: LoadForecastOptions,
     test_dataset: tf.data.Dataset,
-    scaler,
+    scaler: MinMaxScaler,
 ) -> None:
     """after running the model make a prediction
     use a randomly selected window
-    show a plot of predicted vs actual over the forecast horizon
     Args:
       model:    the trained model
       opts:     load forecast options object
@@ -35,7 +66,6 @@ def predict_and_plot(
     rnd_batch = random.randint(0, len(list(test_dataset)[0][0]))
     rnd_sample = random.randint(0, len(list(test_dataset)))
 
-    # make a prediction using the trained model
     model.load_weights(
         os.path.join(MODEL_OUT_PATH, f"{opts['model']}{opts['zone']}.hdf5")
     )
@@ -43,20 +73,7 @@ def predict_and_plot(
         tf.expand_dims(list(test_dataset)[rnd_sample][0][rnd_batch], axis=0)
     )
 
-    # plot prediction
-    plt.plot(np.squeeze(scaler.inverse_transform(pred)), label="predicted")
-    plt.plot(
-        np.squeeze(
-            scaler.inverse_transform(
-                tf.expand_dims(list(test_dataset)[rnd_sample][1][rnd_batch], axis=0)
-            )
-        ),
-        label="actual",
-    )
-    plt.legend(loc="upper left")
-    plt.xlabel("Hour")
-    plt.ylabel("MW")
-    plt.show()
+    plot_prediction(pred, test_dataset, scaler, rnd_batch, rnd_sample)
 
 
 def run_model(
@@ -106,7 +123,7 @@ def run_model(
         ],
     )
 
-    predict_and_plot(model, opts, test_dataset, scaler)
+    predict_using_trained_model(model, opts, test_dataset, scaler)
 
 
 def cnn_model(

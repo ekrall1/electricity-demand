@@ -1,6 +1,7 @@
 """ NN time series load forecast model """
 
 import os
+import random
 import sys
 
 import matplotlib.pyplot as plt  # type: ignore
@@ -14,6 +15,48 @@ from model.callbacks import (
     early_stopping,
     reduce_lr_on_plateau,
 )
+
+
+def predict_and_plot(
+    model: tf.keras.Sequential,
+    opts: LoadForecastOptions,
+    test_dataset: tf.data.Dataset,
+    scaler,
+) -> None:
+    """after running the model make a prediction
+    use a randomly selected window
+    show a plot of predicted vs actual over the forecast horizon
+    Args:
+      model:    the trained model
+      opts:     load forecast options object
+      test_dataset:     the test data
+    """
+
+    rnd_batch = random.randint(0, len(list(test_dataset)[0][0]))
+    rnd_sample = random.randint(0, len(list(test_dataset)))
+
+    # make a prediction using the trained model
+    model.load_weights(
+        os.path.join(MODEL_OUT_PATH, f"{opts['model']}{opts['zone']}.hdf5")
+    )
+    pred = model.predict(
+        tf.expand_dims(list(test_dataset)[rnd_sample][0][rnd_batch], axis=0)
+    )
+
+    # plot prediction
+    plt.plot(np.squeeze(scaler.inverse_transform(pred)), label="predicted")
+    plt.plot(
+        np.squeeze(
+            scaler.inverse_transform(
+                tf.expand_dims(list(test_dataset)[rnd_sample][1][rnd_batch], axis=0)
+            )
+        ),
+        label="actual",
+    )
+    plt.legend(loc="upper left")
+    plt.xlabel("Hour")
+    plt.ylabel("MW")
+    plt.show()
 
 
 def run_model(
@@ -63,26 +106,7 @@ def run_model(
         ],
     )
 
-    # predict.  soon move this to its own fcn
-    model.load_weights(
-        os.path.join(MODEL_OUT_PATH, f"{opts['model']}{opts['zone']}.hdf5")
-    )
-    pred = model.predict(tf.expand_dims(list(test_dataset)[0][0][0], axis=0))
-
-    # plot prediction.  soon move this to its own fcn
-    plt.plot(np.squeeze(scaler.inverse_transform(pred)), label="predicted")
-    plt.plot(
-        np.squeeze(
-            scaler.inverse_transform(
-                tf.expand_dims(list(test_dataset)[0][1][0], axis=0)
-            )
-        ),
-        label="actual",
-    )
-    plt.legend(loc="upper left")
-    plt.xlabel("Hour")
-    plt.ylabel("MW")
-    plt.show()
+    predict_and_plot(model, opts, test_dataset, scaler)
 
 
 def cnn_model(

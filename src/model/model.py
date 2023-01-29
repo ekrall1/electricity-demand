@@ -63,8 +63,8 @@ def predict_using_trained_model(
       test_dataset:     the test data
     """
 
-    rnd_batch = random.randint(0, len(list(test_dataset)[0][0]))
-    rnd_sample = random.randint(0, len(list(test_dataset)))
+    rnd_batch = random.randint(0, len(list(test_dataset)[0][0]) - 1)
+    rnd_sample = random.randint(0, len(list(test_dataset)) - 1)
 
     model.load_weights(
         os.path.join(MODEL_OUT_PATH, f"{opts['model']}{opts['zone']}.hdf5")

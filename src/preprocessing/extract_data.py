@@ -64,9 +64,10 @@ class DataExtract:
         zipfile_sha: str = self._get_zipfile_sha()
         self._verify_correct_data(zipfile_sha)
         # test the zipfile using built-in method
-        self.zipfile_object.testzip()
-        # extract
-        self.zipfile_object.extract(self.parquet_original_filename, self.data_path)
+        with ZipFile(self.zip_filepath, "r") as zip_file:
+            zip_file.testzip()
+            # extract
+            zip_file.extract(self.parquet_original_filename, self.data_path)
 
         os.rename(
             self._path_to_file(self.parquet_original_filename), self.parquet_filepath

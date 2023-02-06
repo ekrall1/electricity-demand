@@ -51,7 +51,6 @@ class WindowedDataset:
     opts: WindowedDatasetOpts
 
     def __post_init__(self):
-
         validate_options(self.opts)
 
         self.total_len = self.opts["window"] + self.opts["horizon"]
@@ -88,7 +87,6 @@ class WindowedDatasetMultivar:
     opts: WindowedDatasetOpts
 
     def __post_init__(self):
-
         validate_options(self.opts)
 
         self.total_len = self.opts["window"] + self.opts["horizon"]
@@ -126,7 +124,6 @@ class ShuffledWindowedDataset:
     opts: WindowedDatasetOpts
 
     def __post_init__(self):
-
         validate_options(self.opts)
 
         self.total_len = self.opts["window"] + self.opts["horizon"]
@@ -166,7 +163,6 @@ class ShuffledWindowedDatasetMultivar:
     opts: WindowedDatasetOpts
 
     def __post_init__(self):
-
         validate_options(self.opts)
 
         self.total_len = self.opts["window"] + self.opts["horizon"]
